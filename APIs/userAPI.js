@@ -39,7 +39,24 @@ userRoute.get('/users', async(req, res)=>{
 
 //Add comment to the article
 userRoute.put('/comment', async(req, res)=>{
-  let articleId = req.body
-  let article = await ArticleModel.findById(articleId)
-
+  try{
+    let {articleId, comment} = req.body
+    let userId = req.user._id // From authenticated user
+    
+    // Find article and add comment
+    let updatedArticle = await ArticleModel.findByIdAndUpdate(
+      articleId,
+      { $push: { commentst: { user: userId, comment: comment } } },
+      { new: true }
+    )
+    
+    // Check if article exists
+    if(!updatedArticle){
+      return res.status(404).json({message: "Article not found", payload: null})
+    }
+    
+    res.status(200).json({message: "Comment added successfully", payload: updatedArticle})
+  }catch(err){
+    res.status(500).json({message: "Error adding comment", error: err.message})
+  }
 })
