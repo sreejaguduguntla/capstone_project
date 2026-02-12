@@ -1,0 +1,119 @@
+### User Register
+POST http://localhost:4000/user-api/users
+Content-Type: application/json
+
+{
+  "firstName": "Sreeja",
+  "lastName": "Guduguntla",
+  "email": "sreejaguduguntla@gmail.com",
+  "password": "Sreeja@2005",
+  "profileImageUrl": "https://example.com/avatars/author.png"
+}
+
+###Author
+
+POST http://localhost:4000/author-api/users
+Content-Type: application/json
+
+{
+  "firstName": "Ammulu",
+  "lastName": "Guduguntla",
+  "email": "ammuluguduguntla@gmail.com",
+  "password": "Ammulu@2005",
+  "profileImageUrl": "https://example.com/avatars/author.png"
+}
+
+
+### Authenticate User
+POST http://localhost:4000/common-api/login
+Content-Type: application/json
+
+{
+  "email": "sreejaguduguntla@gmail.com",
+  "password": "Sreeja@2005"
+}
+
+### Authenticate author
+POST http://localhost:4000/common-api/login
+Content-Type: application/json
+
+{
+  "email": "ammuluguduguntla@gmail.com",
+  "password": "Ammulu@2005"
+}
+
+###Create article
+POST http://localhost:4000/author-api/articles
+Content-Type: application/json
+
+{
+  "author": "69896f2177305fe63e66da32",
+  "title": "Test1 article",
+  "category": "Programming",
+  "content": "Content of Test! article"
+}
+
+### read article
+GET http://localhost:4000/author-api/articles/69896f2177305fe63e66da32
+
+
+### Update article
+PUT http://localhost:4000/author-api/articles
+Content-Type: application/json
+
+{
+  "author": "69896f2177305fe63e66da32",
+  "articleId": "6989944287382d4e1f0de031",
+  "title": "test2 article",
+  "category": "programming",
+  "content": "content of test 2 article"
+}
+
+###Delete the article 
+DELETE http://localhost:4000/author-api/articles/6989944287382d4e1f0de031
+
+
+### Logout
+POST http://localhost:4000/logout
+
+
+### Read all articles
+GET http://localhost:4000/user-api/users
+
+### Comment all articles
+PUT http://localhost:4000/user-api/users/author-api/articles
+Content-Type: application/json
+
+{
+  "user": "Sreeja",
+  "comment": "Book is very good"
+}
+
+### Test request
+GET http://localhost:4000/test
+
+### block user
+PUT http://localhost:4000/admin-api/block
+Content-Type: application/json
+
+{
+  "id": "698968f8181f75992ad58249"
+}
+
+### unblock user
+PUT http://localhost:4000/admin-api/unblock
+Content-Type: application/json
+
+{
+  "id": "698968f8181f75992ad58249"
+}
+
+###Change password
+PUT http://localhost:4000/common-api/change-password
+Content-Type: application/json
+
+{
+  "email": "sreejaguduguntla@gmail.com",
+  "currentPassword": "Sreeja@2005",
+  "newPassword": "sreeja@2005"
+}
