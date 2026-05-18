@@ -1,50 +1,48 @@
-import { Schema, SchemaType, model } from 'mongoose'
+import { Schema, model } from "mongoose";
 
-//Create User comment Schema
+//Create user comment schema
 const userCommentSchema = new Schema({
-  user:{
+  user: {
     type: Schema.Types.ObjectId,
-    ref: 'user'
+    ref: "user",
   },
-  comment:{
+  comment: {
     type: String,
-  }
-})
+  },
+});
 
-//Create Article Schema
-const articleSchema = new Schema({
-  author:{
-    type: Schema.Types.ObjectId,
-    ref: 'user',
-    required: [true, "Author Id required"]
+//create article schema
+const articleSchema = new Schema(
+  {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: [true, "Author ID required"],
+    },
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+    },
+    category: {
+      type: String,
+      required: [true, "Category is required"],
+    },
+    content: {
+      type: String,
+      required: [true, "Content is required"],
+    },
+    comments: [userCommentSchema],
+    isArticleActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  articleId:{
-    type: Schema.Types.ObjectId,
-    ref: 'article',
-    required: [true, "articleId is required"]
+  {
+    timestamps: true,
+    strict: "throw",
+    versionKey: false,
   },
-  title:{
-    type: String,
-    required: [true, "Title is required"]
-  },
-  category:{
-    type: String,
-    required: [true, "category is required"]
-  },
-  content:{
-    type: String,
-    required: [true, "Content is required"]
-  },
-  commentst: [userCommentSchema],
-  isArticleActive:{
-    type: Boolean,
-    default: true
-  },
-},{
-  timestamps: true,
-  strict: 'throw',
-  versionKey: false
-})
+);
 
-//create model
-export const ArticleModel = model('article', articleSchema)
+//Create article model
+export const ArticleModel = model("article", articleSchema);

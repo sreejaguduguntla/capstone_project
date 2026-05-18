@@ -1,53 +1,69 @@
-import exp from "express"
-import bcrypt from 'bcryptjs'
-import {authenticate, register} from '../services/authService.js' 
-import { UserTypeModel } from "../models/userModel.js"
-export const commonRoute = exp.Router()
+import exp from "express";
+import { authenticate } from "../services/authService.js";
+import { UserTypeModel } from "../models/userModel.js";
+import bcrypt from "bcryptjs";
+import { verifyToken } from "../middlewares/verifyToken.js";
+export const commonRouter = exp.Router();
 
 //login
-commonRoute.post('/login', async(req, res)=>{
+commonRouter.post("/login", async (req, res) => {
   //get user cred object
-    let userCred = req.body
-    //call authenticate 
-    let {token, user} = await authenticate(userCred)
-    //save token as httpOnly cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: false
-    });
-    res.status(200).json({message: "Login Successfull", payload: user})
-})
-//logout
+  let userCred = req.body;
+  //call authenticate service
+  let { token, user } = await authenticate(userCred);
+  //save tokan as httpOnly cookie
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+  //send res
+  res.status(200).json({ message: "login success", payload: user });
+});
 
-//change password
-commonRoute.put('/change-password', async(req, res)=>{
-    // accept either `currentPass` or `currentPassword` (same for new)
-    let { email } = req.body
-    let currentPass = req.body.currentPassword
-    let newPass = req.body.newPassword
+//logout for User, Author and Admin
+commonRouter.get("/logout", (req, res) => {
+  // Clear the cookie named 'token'
+  res.clearCookie("token", {
+    httpOnly: true, // Must match original  settings
+    secure: false, // Must match original  settings
+    sameSite: "lax", // Must match original  settings
+  });
 
-    if(!email || !currentPass || !newPass){
-      return res.status(400).json({message: "email, current password and new password are required"})
-    }
+  res.status(200).json({ message: "Logged out successfully" });
+});
 
-    let user = await UserTypeModel.findOne({ email })
-    if(!user){
-      return res.status(404).json({message: "User not found"})
-    }
+//Change password(Protected route)
+commonRouter.put("/change-password", async (req, res) => {
+  //get current password and new password
+  const { role, email, currentPassword, newPassword } = req.body;
+  // Prevent same password
+  if (currentPassword === newPassword) {
+    return res.status(400).json({ message: "newPassword must be different from currentPassword" });
+  }
 
-    // check the current password is correct (compare plaintext -> stored hash)
-    let isMatch = await bcrypt.compare(currentPass, user.password)
-    if(!isMatch){
-      return res.status(401).json({message: "Invalid current password"})
-    }
+  // Find user by email (works for USER, AUTHOR, ADMIN — all same collection)
+  const account = await UserTypeModel.findOne({ email });
+  if (!account) {
+    return res.status(404).json({ message: "Account not found" });
+  }
 
-    // hash the new password before saving
-    let hashedNew = await bcrypt.hash(newPass, 10)
-    let passwordChange = await UserTypeModel.findByIdAndUpdate(user.id, {
-      $set: { password: hashedNew }
-    }, { new: true })
+  // Verify current password
+  const isMatch = await bcrypt.compare(currentPassword, account.password);
+  if (!isMatch) {
+    return res.status(401).json({ message: "Current password is incorrect" });
+  }
+  // Hash and save new password
+  account.password = await bcrypt.hash(newPassword, 10);
+  await account.save();
 
-    //send res
-    res.status(200).json({ message: "Password updated", payload: passwordChange })
-})
+  res.status(200).json({ message: "Password changed successfully" });
+});
+
+//Page refresh
+commonRouter.get("/check-auth", verifyToken("USER","AUTHOR","ADMIN"), (req, res) => {
+  res.status(200).json({
+    message: "authenticated",
+    payload: req.user
+  });
+});

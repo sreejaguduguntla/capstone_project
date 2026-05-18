@@ -3,9 +3,9 @@ POST http://localhost:4000/user-api/users
 Content-Type: application/json
 
 {
-  "firstName": "Sreeja",
+  "firstName": "ammu",
   "lastName": "Guduguntla",
-  "email": "sreejaguduguntla@gmail.com",
+  "email": "sreeja@gmail.com",
   "password": "Sreeja@2005",
   "profileImageUrl": "https://example.com/avatars/author.png"
 }
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 {
   "email": "sreejaguduguntla@gmail.com",
-  "password": "Sreeja@2005"
+  "password": "sreeja@2005"
 }
 
 ### Authenticate author
@@ -48,9 +48,9 @@ Content-Type: application/json
 
 {
   "author": "69896f2177305fe63e66da32",
-  "title": "Test1 article",
-  "category": "Programming",
-  "content": "Content of Test! article"
+  "title": "Test4 article",
+  "category": "How to Live?",
+  "content": "Content of Test4"
 }
 
 ### read article
@@ -70,7 +70,7 @@ Content-Type: application/json
 }
 
 ###Delete the article 
-DELETE http://localhost:4000/author-api/articles/6989944287382d4e1f0de031
+DELETE http://localhost:4000/author-api/articles/69897de8fc0c51717c3946b4
 
 
 ### Logout
@@ -78,14 +78,15 @@ POST http://localhost:4000/logout
 
 
 ### Read all articles
-GET http://localhost:4000/user-api/users
+GET http://localhost:4000/user-api/articles
 
 ### Comment all articles
-PUT http://localhost:4000/user-api/users/author-api/articles
+PUT http://localhost:4000/user-api/users/comment
 Content-Type: application/json
 
 {
-  "user": "Sreeja",
+  "user": "698968f8181f75992ad58249" ,
+  "articleId": "6989944287382d4e1f0de031",
   "comment": "Book is very good"
 }
 
@@ -117,3 +118,9 @@ Content-Type: application/json
   "currentPassword": "Sreeja@2005",
   "newPassword": "sreeja@2005"
 }
+
+###
+PATCH http://localhost:4000/author-api/articles/69ae857ca752972116f5e6e9/status
+Content-Type: application/json
+
+{ "isArticleActive": true }
